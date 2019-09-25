@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.0.1
+-- version 4.7.9
 -- https://www.phpmyadmin.net/
 --
--- Servidor: localhost
--- Tiempo de generación: 21-09-2019 a las 23:37:41
--- Versión del servidor: 10.3.16-MariaDB
--- Versión de PHP: 7.1.30
+-- Servidor: 127.0.0.1:3306
+-- Tiempo de generación: 25-09-2019 a las 12:05:19
+-- Versión del servidor: 5.7.21
+-- Versión de PHP: 5.6.35
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -26,6 +26,7 @@ DELIMITER $$
 --
 -- Procedimientos
 --
+DROP PROCEDURE IF EXISTS `sp_AgregarProducto`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_AgregarProducto` (IN `pNom` VARCHAR(255), IN `pDesc` TEXT, IN `pImg` BLOB, IN `pPrec` FLOAT, IN `pSto` INT)  NO SQL
 BEGIN
 	SET @Existe = (SELECT Nombre FROM productos WHERE Nombre = pNom);
@@ -37,18 +38,38 @@ BEGIN
     END IF;
 END$$
 
+DROP PROCEDURE IF EXISTS `sp_EliminarProducto`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_EliminarProducto` (IN `pNom` VARCHAR(255))  NO SQL
 BEGIN
 	SET @ID = (SELECT ID from productos WHERE Nombre = pNom);
     DELETE FROM productos WHERE @ID=ID;
 END$$
 
+DROP PROCEDURE IF EXISTS `sp_ModificarProducto`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ModificarProducto` (IN `pNom` VARCHAR(255), IN `pDesc` TEXT, IN `pImg` BLOB, IN `pPrec` FLOAT, IN `pSto` INT)  NO SQL
 BEGIN
 	SET @ID = (SELECT ID FROM productos WHERE Nombre = pNom);
     UPDATE productos 
     SET Nombre=pNom, Descripcion=pDesc, Imagen=pImg, Precio=pPrec, Stock=pSto
     WHERE ID=@ID;
+END$$
+
+DROP PROCEDURE IF EXISTS `sp_ObtenerProducto`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ObtenerProducto` (IN `pNom` VARCHAR(255))  NO SQL
+BEGIN
+	SET @Existe = (SELECT ID FROM productos WHERE Nombre = pNom);
+    IF(@Existe IS NOT NULL)
+    THEN
+    	SELECT * FROM productos WHERE ID = @Existe;
+    ELSE
+    	Select "Producto no encontrado" AS Error;
+   	END IF;
+END$$
+
+DROP PROCEDURE IF EXISTS `sp_ObtenerProductos`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ObtenerProductos` ()  NO SQL
+BEGIN
+	SELECT * FROM productos;
 END$$
 
 DELIMITER ;
@@ -59,34 +80,16 @@ DELIMITER ;
 -- Estructura de tabla para la tabla `productos`
 --
 
-CREATE TABLE `productos` (
-  `ID` int(11) NOT NULL,
+DROP TABLE IF EXISTS `productos`;
+CREATE TABLE IF NOT EXISTS `productos` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
   `Nombre` varchar(255) NOT NULL,
   `Descripcion` text NOT NULL,
   `Imagen` blob NOT NULL,
   `Precio` float NOT NULL,
-  `Stock` int(11) NOT NULL
+  `Stock` int(11) NOT NULL,
+  PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Índices para tablas volcadas
---
-
---
--- Indices de la tabla `productos`
---
-ALTER TABLE `productos`
-  ADD PRIMARY KEY (`ID`);
-
---
--- AUTO_INCREMENT de las tablas volcadas
---
-
---
--- AUTO_INCREMENT de la tabla `productos`
---
-ALTER TABLE `productos`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
