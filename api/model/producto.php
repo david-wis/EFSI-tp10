@@ -1,7 +1,7 @@
 <?php
     class Producto {
         private $nombre;
-        private $descripcion
+        private $descripcion;
         private $imagen;
         private $precio;
         private $stock;
