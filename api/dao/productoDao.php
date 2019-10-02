@@ -16,9 +16,7 @@
                 DB::Disconnect($bd);
             }
             return $result;       
-        }
-
-        
+        }        
 
         public static function ModificarProducto($producto){
             $result = true;

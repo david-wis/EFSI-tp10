@@ -49,31 +49,27 @@ class DB {
     }
 
     public static function ObtenerProducto($pdo, $nombre) {
+        $producto = null;
         try{
             $sth = $dbh->prepare("CALL sp_ObtenerProducto(:nombre)");
-            $sth->bindParam(':nombre', $producto->nombre);
+            $producto = $sth->bindParam(':nombre', $producto->nombre);
             $sth->execute();
         } catch (Exception $e) {
             echo "Fallo ".$e->getMessage();
         }
+        return $producto;
     }
 
-    public static function AgregarProducto($pdo, $producto) {
+    public static function ObtenerTodos($pdo) {
+        $productos = null;
         try{
-            $sth = $dbh->prepare("CALL sp_AgregarProducto(:nombre,:descripcion,:imagen,:precio,:stock)");
-            $sth->bindParam(':nombre', $producto->nombre);
-            $sth->bindParam(':descripcion', $producto->descripcion);
-            $sth->bindParam(':imagen', $producto->imagen);
-            $sth->bindParam(':precio', $producto->precio);
-            $sth->bindParam(':stock', $producto->stock);
-            $sth->execute();
+            $productos = $pdo->exec("CALL sp_ObtenerTodos()");
         } catch (Exception $e) {
             echo "Fallo ".$e->getMessage();
         }
+        return $productos;
     }
-
-
-
+    
     public static function Disconnect(&$pdo) {
         $pdo = null;
     }

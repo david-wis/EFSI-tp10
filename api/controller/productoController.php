@@ -1,5 +1,5 @@
 <?php
-    require_once('./dao/productoDao.php');
+    require_once('../dao/productoDao.php');
     $action = isset($_POST['action']) ? $_POST['action'] : $_GET['action'];
     switch ($action) {
         case 'agregar':

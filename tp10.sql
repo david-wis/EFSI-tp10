@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 25-09-2019 a las 12:05:19
+-- Tiempo de generación: 02-10-2019 a las 11:58:37
 -- Versión del servidor: 5.7.21
 -- Versión de PHP: 5.6.35
 
@@ -46,11 +46,11 @@ BEGIN
 END$$
 
 DROP PROCEDURE IF EXISTS `sp_ModificarProducto`$$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ModificarProducto` (IN `pNom` VARCHAR(255), IN `pDesc` TEXT, IN `pImg` BLOB, IN `pPrec` FLOAT, IN `pSto` INT)  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ModificarProducto` (IN `pNom` VARCHAR(255), IN `pDesc` TEXT, IN `pImg` BLOB, IN `pPrec` FLOAT, IN `pSto` INT, IN `pNuevoNom` INT)  NO SQL
 BEGIN
 	SET @ID = (SELECT ID FROM productos WHERE Nombre = pNom);
     UPDATE productos 
-    SET Nombre=pNom, Descripcion=pDesc, Imagen=pImg, Precio=pPrec, Stock=pSto
+    SET Nombre=pNuevoNom, Descripcion=pDesc, Imagen=pImg, Precio=pPrec, Stock=pSto
     WHERE ID=@ID;
 END$$
 
