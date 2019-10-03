@@ -1,49 +1,59 @@
 <?php
-    class Producto {
-        private $nombre;
-        private $descripcion;
-        private $imagen;
-        private $precio;
-        private $stock;
+    class Producto implements JsonSerializable {
+        private $Nombre;
+        private $Descripcion;
+        private $Imagen;
+        private $Precio;
+        private $Stock;
         
         public function getNombre(){
-            return $this->nombre;
+            return $this->Nombre;
         }
 
         public function setNombre($nombre){
-            $this->nombre = $nombre;
+            $this->Nombre = $nombre;
         }
     
         public function getDescripcion(){
-            return $this->descripcion;
+            return $this->Descripcion;
         }
 
         public function setDescripcion($descripcion){
-            $this->descripcion = $descripcion;
+            $this->Descripcion = $descripcion;
         }
     
         public function getImagen(){
-            return $this->imagen;
+            return $this->Imagen;
         }
 
         public function setImagen($imagen){
-            $this->imagen = $imagen;
+            $this->Imagen = $imagen;
         }
         
         public function getPrecio(){
-            return $this->precio;
+            return $this->Precio;
         }
 
         public function setPrecio($precio){
-            $this->precio = $precio;
+            $this->Precio = $precio;
         }
     
         public function getStock(){
-            return $this->stock;
+            return $this->Stock;
         }
 
         public function setStock($stock){
-            $this->stock = $stock;
+            $this->Stock = $stock;
+        }
+
+        public function jsonSerialize() {
+            $array = array( "Nombre" => $this->Nombre,
+                            "Descripcion" => $this->Descripcion,
+                            "Imagen" => base64_encode($this->Imagen),
+                            "Precio" => $this->Precio,
+                            "Stock" => $this->Stock
+            );
+            return $array;
         }
     }
 ?>

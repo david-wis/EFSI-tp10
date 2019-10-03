@@ -1,4 +1,6 @@
 <?php
+require_once('model/producto.php');
+
 class DB {
     public static function Connect() {
         try {
@@ -63,7 +65,8 @@ class DB {
     public static function ObtenerTodos($pdo) {
         $productos = null;
         try{
-            $productos = $pdo->exec("CALL sp_ObtenerTodos()");
+            $result = $pdo->query("CALL sp_ObtenerProductos()");
+            $productos = $result->fetchAll(PDO::FETCH_CLASS, 'producto');
         } catch (Exception $e) {
             echo "Fallo ".$e->getMessage();
         }

@@ -57,7 +57,7 @@
 
         public static function ObtenerTodos() {
             $bd = DB::Connect();
-            $results = DB::ObtenerProductos($bd);
+            $results = DB::ObtenerTodos($bd);
             DB::Disconnect($bd);
             return $results;
         }
