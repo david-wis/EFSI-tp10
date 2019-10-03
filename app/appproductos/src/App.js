@@ -21,6 +21,12 @@ class Tabla extends React.Component {
       url: 'http://localhost/tp10/api/controller/productoController.php?action=obtenerTodos',
       dataType: "json"
     }).done((data) =>{
+      data.forEach(producto => {
+        let img = new Image();
+        img.src = producto.Imagen;
+        producto.Imagen = img;
+      });
+
       this.setState({
         data: data,
         pages: data.length,
@@ -60,8 +66,7 @@ class Tabla extends React.Component {
           pages={pages} // Display the total number of pages
           loading={loading} // Display the loading overlay when we need it
           onFetchData={this.fetchData} // Request new data when things change
-          filterable
-          defaultPageSize={10}
+          defaultPageSize={5}
           className="-striped -highlight"
         />
         <br />
