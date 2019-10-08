@@ -9,7 +9,9 @@
       name="description"
       content="Web site created using create-react-app"
     />
-    <link rel="apple-touch-icon" href="logo192.png" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -24,11 +26,35 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <!--desde aca-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+    <link rel="stylesheet" href="plugins/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="plugins/slick/slick.css">
+    <link rel="stylesheet" href="plugins/themify-icons/themify-icons.css">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>Flechi appproductos</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
@@ -39,5 +65,87 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+
+    <!-- hero area -->
+    <section class="hero-area bg-primary" id="parallax">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-11 mx-auto">
+            <h1 class="text-white font-tertiary">Welcome to our <br> Flechi appproductos</h1>
+          </div>
+        </div>
+      </div>
+      <div class="layer-bg w-100">
+        <img class="img-fluid w-100" src="images/illustrations/leaf-bg.png" alt="bg-shape">
+      </div>
+      <div class="layer" id="l2">
+        <img src="images/illustrations/dots-cyan.png" alt="bg-shape">
+      </div>
+      <div class="layer" id="l3">
+        <img src="images/illustrations/leaf-orange.png" alt="bg-shape">
+      </div>
+      <div class="layer" id="l4">
+        <img src="images/illustrations/dots-orange.png" alt="bg-shape">
+      </div>
+      <div class="layer" id="l5">
+        <img src="images/illustrations/leaf-yellow.png" alt="bg-shape">
+      </div>
+      <div class="layer" id="l6">
+        <img src="images/illustrations/leaf-cyan.png" alt="bg-shape">
+      </div>
+      <div class="layer" id="l7">
+        <img src="images/illustrations/dots-group-orange.png" alt="bg-shape">
+      </div>
+      <div class="layer" id="l8">
+        <img src="images/illustrations/leaf-pink-round.png" alt="bg-shape">
+      </div>
+      <div class="layer" id="l9">
+        <img src="images/illustrations/leaf-cyan-2.png" alt="bg-shape">
+      </div>
+    </section>
+      <!-- /hero area -->
+      <!-- about -->
+      <section class="section">
+        <div class="container">
+            <div class="col-lg-10 mx-auto text-center">
+                <div id="root"></div>
+            </div>
+        </div>
+      </section>
+      <!-- /about -->
+      
+      <!-- footer -->
+      <footer class="bg-dark">
+        <div class="border-top text-center border-dark py-5">
+          <p class="mb-0 text-light">Copyright ©<script>
+              var CurrentYear = new Date().getFullYear()
+              document.write(CurrentYear)
+            </script> a theme by <a href="themefisher.com">themefisher.com</a></p>
+        </div>
+      </footer>
+      <!-- /footer -->
+      
+      <!-- jQuery -->
+      <script src="plugins/jQuery/jquery.min.js"></script>
+      <!-- Bootstrap JS -->
+      <script src="plugins/bootstrap/bootstrap.min.js"></script>
+      <!-- slick slider -->
+      <script src="plugins/slick/slick.min.js"></script>
+      <!-- filter -->
+      <script src="plugins/shuffle/shuffle.min.js"></script>
+      
+      <!-- Main Script -->
+      <script src="js/script.js"></script>
+      
+        <!--
+          This HTML file is a template.
+          If you open it directly in the browser, you will see an empty page.
+
+          You can add webfonts, meta tags, or analytics to this file.
+          The build step will place the bundled scripts into the <body> tag.
+
+          To begin the development, run `npm start` or `yarn start`.
+          To create a production bundle, use `npm run build` or `yarn build`.
+        -->
   </body>
 </html>
