@@ -33,12 +33,45 @@ class Tabla extends React.Component {
 
   actualizarTabla(nomViejo, index, data) {
     this.setState({ data });
-    console.log({nombre: nomViejo, descripcion: data[index].Descripcion, imagen: data[index].Imagen, precio: data[index].Precio, stock: data[index].Stock, nuevonombre: data[index].Nombre});
+    let producto = {
+      nombre: nomViejo, 
+      descripcion: data[index].Descripcion, 
+      imagen: data[index].Imagen, 
+      precio: data[index].Precio, 
+      stock: data[index].Stock, 
+      nuevonombre: data[index].Nombre
+    }
+    this.modificarTabla(producto);
+  }
+
+  handleImageChange(event) {
+    let btn = event.target;
+    let archivo = btn.files[0];
+    let reader  = new FileReader();
+    reader.onloadend = () => {
+      let fila = btn.parentElement.parentElement.parentElement;
+      let producto = {
+        nombre: fila.children[0].firstChild.innerHTML,
+        descripcion: fila.children[1].firstChild.innerHTML,
+        imagen: reader.result.substring(23), //Le borramos el data:image/jpeg;base64,
+        precio: fila.children[3].firstChild.innerHTML,
+        stock: fila.children[4].firstChild.innerHTML,
+        nuevonombre: fila.children[0].firstChild.innerHTML //Hacemos un poco de trampa por la causa
+      };
+      this.modificarTabla(producto);
+      btn.previousSibling.src = reader.result;
+    }
+    if (archivo) {
+      reader.readAsDataURL(archivo);
+    }
+  }
+
+  modificarTabla(producto) {
     $.ajax({
       url: 'http://localhost/tp10/api/controller/productoController.php?action=modificar',
       method: 'POST',
       //dataType: "json",
-      data: {nombre: nomViejo, descripcion: data[index].Descripcion, imagen: data[index].Imagen, precio: data[index].Precio, stock: data[index].Stock, nuevonombre: data[index].Nombre}
+      data: producto
     }).done((data, textStatus, jqXHR) => {
       if (data.status === "success") {
         console.log("Exito al actualizar los datos");
@@ -48,10 +81,6 @@ class Tabla extends React.Component {
     }).fail((jqXHR, textStatus, errorThrown) => {
       console.log("Error al actualizar los datos " + errorThrown);
     });
-  }
-
-  handleImageChange(event) {
-    //alert(event.target.files[0]);
   }
 
   renderEditable(cellInfo) {
@@ -95,8 +124,8 @@ class Tabla extends React.Component {
                 //console.log(row.value);
                 return (
                   <div>
-                    <img alt="Foto no encontrada" src={"data:image/jpeg;base64,"+row.value}></img>
-                    <input type="file" onChange={this.handleImageChange}/>
+                    <img width="50" heigth="50" alt="Foto no encontrada" src={"data:image/jpeg;base64,"+row.value}></img>
+                    <input type="file" onChange={this.handleImageChange} accept='.jpg'/>
                   </div>
                 );
               },

@@ -27,7 +27,6 @@
             $producto["precio"] = $_POST['precio'];
             $producto["stock"] = $_POST['stock'];
             $producto["nuevonombre"] = $_POST['nuevonombre'];
-            echo $producto["nuevonombre"];
             if (ProductoDao::ModificarProducto($producto)) {
                 echo json_encode(array("status" => 'success'));
             } else {
