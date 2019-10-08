@@ -32,7 +32,6 @@ class Tabla extends React.Component {
   }
 
   actualizarTabla(nomViejo, index, data) {
-    this.setState({ data });
     let producto = {
       nombre: nomViejo, 
       descripcion: data[index].Descripcion, 
@@ -42,11 +41,13 @@ class Tabla extends React.Component {
       nuevonombre: data[index].Nombre
     }
     this.modificarTabla(producto);
+    this.setState({data: data });
   }
 
   handleImageChange(event) {
     let btn = event.target;
     let archivo = btn.files[0];
+    let id = btn.getAttribute('row-id');
     let reader  = new FileReader();
     reader.onloadend = () => {
       let fila = btn.parentElement.parentElement.parentElement;
@@ -59,7 +60,9 @@ class Tabla extends React.Component {
         nuevonombre: fila.children[0].firstChild.innerHTML //Hacemos un poco de trampa por la causa
       };
       this.modificarTabla(producto);
-      btn.previousSibling.src = reader.result;
+      let data = [...this.state.data];
+      data[id].Imagen = reader.result.substring(23);
+      this.setState({data: data});
     }
     if (archivo) {
       reader.readAsDataURL(archivo);
@@ -124,8 +127,8 @@ class Tabla extends React.Component {
                 //console.log(row.value);
                 return (
                   <div>
-                    <img width="50" heigth="50" alt="Foto no encontrada" src={"data:image/jpeg;base64,"+row.value}></img>
-                    <input type="file" onChange={this.handleImageChange} accept='.jpg'/>
+                    <img width="100" height="100" alt="Foto no encontrada" src={"data:image/jpeg;base64,"+row.value}></img>
+                    <input type="file" onChange={this.handleImageChange} row-id={row.index} accept='.jpg'/>
                   </div>
                 );
               },
