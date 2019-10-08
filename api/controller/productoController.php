@@ -26,7 +26,13 @@
             $producto["imagen"] = $_POST['imagen'];
             $producto["precio"] = $_POST['precio'];
             $producto["stock"] = $_POST['stock'];
-            ProductoDao::ModificarProducto($producto);
+            $producto["nuevonombre"] = $_POST['nuevonombre'];
+            echo $producto["nuevonombre"];
+            if (ProductoDao::ModificarProducto($producto)) {
+                echo json_encode(array("status" => 'success'));
+            } else {
+                echo json_encode(array("status" => 'error'));
+            }
             break;
         case 'eliminar':
             ProductoDao::EliminarProducto($_POST['nombre']);

@@ -46,6 +46,10 @@
             $this->Stock = $stock;
         }
 
+        public function convertirImgABlob() {
+            $this->Imagen = base64_decode($this->Imagen);
+        }
+
         public function jsonSerialize() {
             $array = array( "Nombre" => $this->Nombre,
                             "Descripcion" => $this->Descripcion,

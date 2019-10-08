@@ -21,14 +21,18 @@
         public static function ModificarProducto($producto){
             $result = true;
             $productoModificado = new Producto();
-            $result = $result && Validar($productoModificado->setNombre, $producto['nombre']); 
-            $result = $result && Validar($productoModificado->setDescripcion, $producto['descripcion']);
-            $result = $result && Validar($productoModificado->setImagen, $producto['imagen']);
-            $result = $result && Validar($productoModificado->setPrecio, $producto['precio']);
-            $result = $result && Validar($productoModificado->setStock, $producto['stock']);
+            $result = $result && self::Validar(array($productoModificado, 'setNombre'), $producto['nuevonombre']); 
+            $result = $result && self::Validar(array($productoModificado, 'setDescripcion'), $producto['descripcion']);
+            $result = $result && self::Validar(array($productoModificado, 'setImagen'), $producto['imagen']);
+            $result = $result && self::Validar(array($productoModificado, 'setPrecio'), $producto['precio']);
+            $result = $result && self::Validar(array($productoModificado, 'setStock'), $producto['stock']);
+            if (isset($producto['nombre'])) {
+                $result = $result && $producto['nombre'] != "";
+            }
             if($result){
+                $productoModificado->convertirImgABlob();
                 $bd = DB::Connect();
-                DB::ModificarProducto($bd, $nombre, $producto);
+                DB::ModificarProducto($bd, $producto['nombre'], $productoModificado);
                 DB::Disconnect($bd);
             }
             return $result;
@@ -62,7 +66,7 @@
             return $results;
         }
 
-        private static function Validar(&$setter, $valor) {
+        private static function Validar(callable $setter, $valor) {
             $exito = false;
             if (isset($valor)) {
                 if (is_string($valor)) { //Nombre - descripcion

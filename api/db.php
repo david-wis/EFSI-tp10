@@ -13,7 +13,7 @@ class DB {
 
     public static function AgregarProducto($pdo, $producto) {
         try{
-            $sth = $dbh->prepare("CALL sp_AgregarProducto(:nombre,:descripcion,:imagen,:precio,:stock)");
+            $sth = $pdo->prepare("CALL sp_AgregarProducto(:nombre,:descripcion,:imagen,:precio,:stock)");
             $sth->bindParam(':nombre', $producto->nombre);
             $sth->bindParam(':descripcion', $producto->descripcion);
             $sth->bindParam(':imagen', $producto->imagen);
@@ -27,7 +27,7 @@ class DB {
 
     public static function EliminarProducto($pdo, $nombre) {
         try{
-            $sth = $dbh->prepare("CALL sp_EliminarProducto(:nombre");
+            $sth = $pdo->prepare("CALL sp_EliminarProducto(:nombre");
             $sth->bindParam(':nombre', $producto->nombre);
             $sth->execute();
         } catch (Exception $e) {
@@ -37,14 +37,23 @@ class DB {
 
     public static function ModificarProducto($pdo, $nombre, $producto) {
         try{
-            $sth = $dbh->prepare("CALL sp_ModificarProducto(:nombre,:descripcion,:imagen,:precio,:stock,:nuevoNom)");
-            $sth->bindParam(':nombre', $producto->nombre);
-            $sth->bindParam(':descripcion', $producto->descripcion);
-            $sth->bindParam(':imagen', $producto->imagen);
-            $sth->bindParam(':precio', $producto->precio);
-            $sth->bindParam(':stock', $producto->stock);
-            $sth->bindParam(':nuevoNom', $nombre);
+            $sth = $pdo->prepare("CALL sp_ModificarProducto(:nombre,:descripcion,:imagen,:precio,:stock,:nuevoNom)");
+
+            $descripcion = $producto->getDescripcion();
+            $imagen = $producto->getImagen();
+            $precio = $producto->getPrecio();
+            $stock = $producto->getStock();
+            $nuevoNombre = $producto->getNombre();
+
+            $sth->bindParam(':nombre', $nombre);
+            $sth->bindParam(':descripcion', $descripcion);
+            $sth->bindParam(':imagen', $imagen);
+            $sth->bindParam(':precio', $precio);
+            $sth->bindParam(':stock', $stock);
+            $sth->bindParam(':nuevoNom', $nuevoNombre);
             $sth->execute();
+
+            //echo $nombre." ".$descripcion." ".$imagen." ".$precio." ".$stock." ".$nuevoNombre;
         } catch (Exception $e) {
             echo "Fallo ".$e->getMessage();
         }
@@ -53,7 +62,7 @@ class DB {
     public static function ObtenerProducto($pdo, $nombre) {
         $producto = null;
         try{
-            $sth = $dbh->prepare("CALL sp_ObtenerProducto(:nombre)");
+            $sth = $pdo->prepare("CALL sp_ObtenerProducto(:nombre)");
             $producto = $sth->bindParam(':nombre', $producto->nombre);
             $sth->execute();
         } catch (Exception $e) {
