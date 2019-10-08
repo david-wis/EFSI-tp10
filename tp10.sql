@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.9
+-- version 4.7.4
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 02-10-2019 a las 11:58:37
--- Versión del servidor: 5.7.21
--- Versión de PHP: 5.6.35
+-- Tiempo de generación: 08-10-2019 a las 18:15:42
+-- Versión del servidor: 5.7.19
+-- Versión de PHP: 5.6.31
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -30,7 +30,7 @@ DROP PROCEDURE IF EXISTS `sp_AgregarProducto`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_AgregarProducto` (IN `pNom` VARCHAR(255), IN `pDesc` TEXT, IN `pImg` BLOB, IN `pPrec` FLOAT, IN `pSto` INT)  NO SQL
 BEGIN
 	SET @Existe = (SELECT Nombre FROM productos WHERE Nombre = pNom);
-    IF (@Existe IS NOT NULL)
+    IF (@Existe IS NULL)
     THEN
     	INSERT INTO productos (Nombre, Descripcion, Imagen, Precio, Stock) VALUES (pNom, pDesc, pImg, pPrec, pSto);
     ELSE
@@ -89,7 +89,14 @@ CREATE TABLE IF NOT EXISTS `productos` (
   `Precio` float NOT NULL,
   `Stock` int(11) NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `productos`
+--
+
+INSERT INTO `productos` (`ID`, `Nombre`, `Descripcion`, `Imagen`, `Precio`, `Stock`) VALUES
+(1, 'Producto1', 'Estas son las cualidades del hermoso producto', '', 1000, 100);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
