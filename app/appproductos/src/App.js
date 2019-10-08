@@ -14,6 +14,7 @@ class Tabla extends React.Component {
     };
     this.fetchData = this.fetchData.bind(this);
     this.renderEditable = this.renderEditable.bind(this);
+    this.handleImageChange = this.handleImageChange.bind(this);
   }
  
   fetchData(state, instance){
@@ -47,6 +48,10 @@ class Tabla extends React.Component {
     }).fail((jqXHR, textStatus, errorThrown) => {
       console.log("Error al actualizar los datos " + errorThrown);
     });
+  }
+
+  handleImageChange(event) {
+    //alert(event.target.files[0]);
   }
 
   renderEditable(cellInfo) {
@@ -88,7 +93,12 @@ class Tabla extends React.Component {
               Header: "Imagen",
               Cell: (row) => {
                 //console.log(row.value);
-                return <img alt="Foto no encontrada" src={"data:image/jpeg;base64,"+row.value}></img>
+                return (
+                  <div>
+                    <img alt="Foto no encontrada" src={"data:image/jpeg;base64,"+row.value}></img>
+                    <input type="file" onChange={this.handleImageChange}/>
+                  </div>
+                );
               },
               accessor: "Imagen"
             },
