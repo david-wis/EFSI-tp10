@@ -21,12 +21,6 @@ class Tabla extends React.Component {
       url: 'http://localhost/tp10/api/controller/productoController.php?action=obtenerTodos',
       dataType: "json"
     }).done((data) =>{
-      data.forEach(producto => {
-        let img = new Image();
-        img.src = producto.Imagen;
-        producto.Imagen = img;
-      });
-
       this.setState({
         data: data,
         pages: data.length,
@@ -34,6 +28,7 @@ class Tabla extends React.Component {
       });
     });
   }
+
 
   render() {
     const { data, pages, loading } = this.state;
@@ -47,10 +42,14 @@ class Tabla extends React.Component {
             },
             {
               Header: "Descripcion",
-              accessor: "Descripcion",
+              accessor: "Descripcion"
             },
             {
               Header: "Imagen",
+              Cell: (row) => {
+                //console.log(row.value);
+                return <img alt="Foto no encontrada" src={"data:image/jpeg;base64,"+row.value}></img>
+              },
               accessor: "Imagen"
             },
             {
