@@ -31,67 +31,69 @@ class Tabla extends React.Component {
     });
   }
 
-  actualizarTabla(nomViejo, index, data) {
-    this.setState({data: data });
+  actualizarTabla(valor, index, idCol) {
+    //this.setState({data: data });
+    const data = [...this.state.data];
     let producto = {
-      nombre: nomViejo, 
-      descripcion: data[index].Descripcion, 
-      imagen: data[index].Imagen, 
-      precio: data[index].Precio, 
-      stock: data[index].Stock, 
-      nuevonombre: data[index].Nombre
+      Nombre: data[index].Nombre, 
+      Descripcion: data[index].Descripcion, 
+      Imagen: data[index].Imagen, 
+      Precio: data[index].Precio, 
+      Stock: data[index].Stock, 
+      Nuevonombre: data[index].Nombre
     }
-    this.modificarTabla(producto);
+    if (idCol === "Nombre")  {
+      producto.Nuevonombre = valor;
+    } else {
+      producto[idCol] = valor;
+    }
+    
+    this.modificarTabla(producto, index);
   }
 
-  handleImageChange(event) {
-    let btn = event.target;
+  handleImageChange(btn, index) {
     let archivo = btn.files[0];
-    let id = btn.getAttribute('row-id');
     let reader  = new FileReader();
-    let data = [...this.state.data];
+    //let data = [...this.state.data];
     reader.onloadend = () => {
-      data[id].Imagen = reader.result.substring(23);
-      this.setState({data: data});
-      /*
-      let fila = btn.parentElement.parentElement.parentElement;
+      const data = [...this.state.data];
+      //this.setState({data: data});
       let producto = {
-        nombre: fila.children[0].firstChild.innerHTML,
-        descripcion: fila.children[1].firstChild.innerHTML,
-        imagen: reader.result.substring(23), //Le borramos el data:image/jpeg;base64,
-        precio: fila.children[3].firstChild.innerHTML,
-        stock: fila.children[4].firstChild.innerHTML,
-        nuevonombre: fila.children[0].firstChild.innerHTML //Hacemos un poco de trampa por la causa
-      };*/
-      let producto = {
-        nombre: data[id].Nombre, 
-        descripcion: data[id].Descripcion, 
-        imagen: data[id].Imagen, 
-        precio: data[id].Precio, 
-        stock: data[id].Stock, 
-        nuevonombre: data[id].Nombre //Hacemos un poco de trampa por la causa
+        Nombre: data[index].Nombre, 
+        Descripcion: data[index].Descripcion, 
+        Imagen: reader.result.substring(23), //Recortamos el data:image/jpeg;base64,
+        Precio: data[index].Precio, 
+        Stock: data[index].Stock, 
+        Nuevonombre: data[index].Nombre //Hacemos un poco de trampa por la causa
       }
-      this.modificarTabla(producto);
+      this.modificarTabla(producto, index);
     }
     if (archivo) {
       reader.readAsDataURL(archivo);
     }
   }
 
-  modificarTabla(producto) {
+  modificarTabla(producto, index) {
     $.ajax({
       url: 'http://localhost/tp10/api/controller/productoController.php?action=modificar',
       method: 'POST',
-      //dataType: "json",
+      dataType: "json",
       data: producto
-    }).done((data, textStatus, jqXHR) => {
-      if (data.status === "success") {
-        console.log("Exito al actualizar los datos");
+    }).done((result, textStatus, jqXHR) => {
+      if (result.status === "success") {
+        console.log("Exito al actualizar los datos ");
+        console.log(result);
+        let data = [...this.state.data];
+        producto.Nombre = producto.Nuevonombre;
+        data[index] = producto;
+        this.setState({data: data});
       } else {
-        console.log(data);
+        console.log(result);
+        this.setState({data: this.state.data});
       }
     }).fail((jqXHR, textStatus, errorThrown) => {
-      console.log("Error al actualizar los datos " + errorThrown);
+      console.log("Error al actualizar los datos: " + jqXHR.responseText);
+      this.setState({data: this.state.data});
     });
   }
 
@@ -102,14 +104,15 @@ class Tabla extends React.Component {
         contentEditable
         suppressContentEditableWarning
         onBlur={e => {
-          const data = [...this.state.data];
+          /*let data = [...this.state.data];
           const nomViejo = data[cellInfo.index].Nombre;
-          data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
-          this.actualizarTabla(nomViejo, cellInfo.index, data);
+          data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;*/
+          this.actualizarTabla(e.target.innerHTML, cellInfo.index, cellInfo.column.id);
         }}
         dangerouslySetInnerHTML={{
           __html: this.state.data[cellInfo.index][cellInfo.column.id]
         }}
+        key={Date()}
       />
     );
   }
@@ -137,7 +140,7 @@ class Tabla extends React.Component {
                 return (
                   <div>
                     <img style={{display: "block"}} width="100" height="100" alt="Foto no encontrada" src={"data:image/jpeg;base64,"+row.value}></img>
-                    <input style={{display: "block"}} type="file" onChange={this.handleImageChange} row-id={row.index} accept='.jpg'/>
+                    <input style={{display: "block"}} type="file" onChange={(e) => {this.handleImageChange(e.target, row.index)}} accept='.jpg'/>
                   </div>
                 );
               },

@@ -21,16 +21,19 @@
             break;
         case 'modificar':
             $producto = array();
-            $producto["nombre"] = $_POST['nombre'];
-            $producto["descripcion"] = $_POST['descripcion'];
-            $producto["imagen"] = $_POST['imagen'];
-            $producto["precio"] = $_POST['precio'];
-            $producto["stock"] = $_POST['stock'];
-            $producto["nuevonombre"] = $_POST['nuevonombre'];
-            if (ProductoDao::ModificarProducto($producto)) {
+            $producto["nombre"] = $_POST['Nombre'];
+            $producto["descripcion"] = $_POST['Descripcion'];
+            $producto["imagen"] = $_POST['Imagen'];
+            $producto["precio"] = $_POST['Precio'];
+            $producto["stock"] = $_POST['Stock'];
+            $producto["nuevonombre"] = $_POST['Nuevonombre'];
+            $resultado = ProductoDao::ModificarProducto($producto);
+            if ($resultado == 1) {
                 echo json_encode(array("status" => 'success'));
+            } else if ($resultado == 0) {
+                echo json_encode(array("status" => 'error', "msg" => 'El dato ingresado no es valido'));
             } else {
-                echo json_encode(array("status" => 'error'));
+                echo json_encode(array("status" => 'error', "msg" => 'La foto es demasiado grande'));
             }
             break;
         case 'eliminar':
