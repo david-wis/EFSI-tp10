@@ -32,6 +32,7 @@ class Tabla extends React.Component {
   }
 
   actualizarTabla(nomViejo, index, data) {
+    this.setState({data: data });
     let producto = {
       nombre: nomViejo, 
       descripcion: data[index].Descripcion, 
@@ -41,7 +42,6 @@ class Tabla extends React.Component {
       nuevonombre: data[index].Nombre
     }
     this.modificarTabla(producto);
-    this.setState({data: data });
   }
 
   handleImageChange(event) {
@@ -49,7 +49,11 @@ class Tabla extends React.Component {
     let archivo = btn.files[0];
     let id = btn.getAttribute('row-id');
     let reader  = new FileReader();
+    let data = [...this.state.data];
     reader.onloadend = () => {
+      data[id].Imagen = reader.result.substring(23);
+      this.setState({data: data});
+      /*
       let fila = btn.parentElement.parentElement.parentElement;
       let producto = {
         nombre: fila.children[0].firstChild.innerHTML,
@@ -58,11 +62,16 @@ class Tabla extends React.Component {
         precio: fila.children[3].firstChild.innerHTML,
         stock: fila.children[4].firstChild.innerHTML,
         nuevonombre: fila.children[0].firstChild.innerHTML //Hacemos un poco de trampa por la causa
-      };
+      };*/
+      let producto = {
+        nombre: data[id].Nombre, 
+        descripcion: data[id].Descripcion, 
+        imagen: data[id].Imagen, 
+        precio: data[id].Precio, 
+        stock: data[id].Stock, 
+        nuevonombre: data[id].Nombre //Hacemos un poco de trampa por la causa
+      }
       this.modificarTabla(producto);
-      let data = [...this.state.data];
-      data[id].Imagen = reader.result.substring(23);
-      this.setState({data: data});
     }
     if (archivo) {
       reader.readAsDataURL(archivo);
