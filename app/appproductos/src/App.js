@@ -136,8 +136,8 @@ class Tabla extends React.Component {
                 //console.log(row.value);
                 return (
                   <div>
-                    <img width="100" height="100" alt="Foto no encontrada" src={"data:image/jpeg;base64,"+row.value}></img>
-                    <input type="file" onChange={this.handleImageChange} row-id={row.index} accept='.jpg'/>
+                    <img style={{display: "block"}} width="100" height="100" alt="Foto no encontrada" src={"data:image/jpeg;base64,"+row.value}></img>
+                    <input style={{display: "block"}} type="file" onChange={this.handleImageChange} row-id={row.index} accept='.jpg'/>
                   </div>
                 );
               },
