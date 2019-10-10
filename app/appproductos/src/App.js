@@ -3,6 +3,7 @@ import React from 'react';
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
 import $ from "jquery";
+import Producto from "./Producto.js"
 
 class Tabla extends React.Component {
   constructor() {
@@ -33,16 +34,8 @@ class Tabla extends React.Component {
   }
 
   actualizarTabla(valor, index, idCol) {
-    //this.setState({data: data });
-    const data = [...this.state.data];
-    let producto = {
-      Nombre: data[index].Nombre, 
-      Descripcion: data[index].Descripcion, 
-      Imagen: data[index].Imagen, 
-      Precio: data[index].Precio, 
-      Stock: data[index].Stock, 
-      Nuevonombre: data[index].Nombre
-    }
+    //El increible poder del spread salva el dia
+    let producto = {...this.state.data[index], Nuevonombre: this.state.data[index].Nombre};
     if (idCol === "Nombre")  {
       producto.Nuevonombre = valor;
     } else {
@@ -55,18 +48,9 @@ class Tabla extends React.Component {
   handleImageChange(btn, index) {
     let archivo = btn.files[0];
     let reader  = new FileReader();
-    //let data = [...this.state.data];
     reader.onloadend = () => {
-      const data = [...this.state.data];
-      //this.setState({data: data});
-      let producto = {
-        Nombre: data[index].Nombre, 
-        Descripcion: data[index].Descripcion, 
-        Imagen: reader.result.substring(23), //Recortamos el data:image/jpeg;base64,
-        Precio: data[index].Precio, 
-        Stock: data[index].Stock, 
-        Nuevonombre: data[index].Nombre //Hacemos un poco de trampa por la causa
-      }
+      let producto = {...this.state.data[index], Nuevonombre: this.state.data[index].Nombre};
+      producto.Imagen = reader.result.substring(23); //Recortamos el data:image/jpeg;base64,
       this.modificarTabla(producto, index);
     }
     if (archivo) {
@@ -137,7 +121,7 @@ class Tabla extends React.Component {
         dangerouslySetInnerHTML={{
           __html: this.state.data[cellInfo.index][cellInfo.column.id]
         }}
-        key={Date()}
+        key={Date()} //Arregla el bug del dangerouslySetinnerHTML
       />
     );
   }
@@ -193,15 +177,7 @@ class Tabla extends React.Component {
               onClick: (e, handleOriginal) => {
                 if (rowInfo === undefined) {
                   if (!this.state.pagNueva){
-                    let data = [...this.state.data];
-                    data.push({
-                      Nombre: "", 
-                      Descripcion: "", 
-                      Imagen: this.state.data[this.state.data.length-1].Imagen, //TODO: Poner foto de muestra
-                      Precio: "", 
-                      Stock: "", 
-                      Nuevonombre: ""
-                    });
+                    const data = [...this.state.data, new Producto()];
                     this.setState({data: data, pagNueva: true});
                   }
                 }
