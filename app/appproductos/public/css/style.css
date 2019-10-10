@@ -907,4 +907,21 @@ blockquote {
   font-weight: bold;
 }
 
+.ReactTable .rt-thead.-header {
+  background-color: #F54DA2; 
+  color: white;
+}
+
+.ReactTable .pagination-bottom {
+  background-color: #3EF8F3;
+}
+
+.ReactTable .rt-tbody {
+  background-color: #bfa9f5;
+}
+
+.ReactTable div.rt-td {
+  white-space: normal;
+  text-align: center;
+}
 /*# sourceMappingURL=maps/style.css.map */
