@@ -10,7 +10,8 @@ class Tabla extends React.Component {
     this.state = {
       data: [],
       pages: null,
-      loading: true
+      loading: true,
+      pagNueva: false
     };
     this.fetchData = this.fetchData.bind(this);
     this.renderEditable = this.renderEditable.bind(this);
@@ -97,6 +98,19 @@ class Tabla extends React.Component {
     });
   }
 
+  validarFila(index) { //Se fija que todos los campos esten llenos
+    let exito = true;
+    for (let prop in this.state.data[index]) {
+      exito = exito && (this.state.data[index][prop] !== "");
+    }
+    return exito;
+  }
+
+  agregarProducto() {
+    
+  }
+
+
   renderEditable(cellInfo) {
     return (
       <div
@@ -107,7 +121,18 @@ class Tabla extends React.Component {
           /*let data = [...this.state.data];
           const nomViejo = data[cellInfo.index].Nombre;
           data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;*/
-          this.actualizarTabla(e.target.innerHTML, cellInfo.index, cellInfo.column.id);
+          if (this.state.pagNueva && cellInfo.index === this.state.data.length-1) { //Si estamos en una fila nueva no se manda nada a la bd
+            let fin = this.validarFila(cellInfo.index);
+            if (fin) {
+              console.log("termine");
+              this.agregarProducto();
+            } else {
+              console.log("cool");
+            }
+          } else {
+            this.actualizarTabla(e.target.innerHTML, cellInfo.index, cellInfo.column.id);
+          }
+          
         }}
         dangerouslySetInnerHTML={{
           __html: this.state.data[cellInfo.index][cellInfo.column.id]
@@ -163,6 +188,29 @@ class Tabla extends React.Component {
           onFetchData={this.fetchData} // Request new data when things change
           defaultPageSize={5}
           className="-striped -highlight"
+          getTdProps={(state, rowInfo, column, instance) => {
+            return {
+              onClick: (e, handleOriginal) => {
+                if (rowInfo === undefined) {
+                  if (!this.state.pagNueva){
+                    let data = [...this.state.data];
+                    data.push({
+                      Nombre: "", 
+                      Descripcion: "", 
+                      Imagen: this.state.data[this.state.data.length-1].Imagen, //TODO: Poner foto de muestra
+                      Precio: "", 
+                      Stock: "", 
+                      Nuevonombre: ""
+                    });
+                    this.setState({data: data, pagNueva: true});
+                  }
+                }
+                if (handleOriginal) {
+                  handleOriginal();
+                }
+              }
+            }
+          }}
         />
         <br />
       </div>
