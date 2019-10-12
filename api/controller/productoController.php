@@ -46,6 +46,11 @@
         case 'obtenerUno':
             $producto = ProductoDao::ObtenerProducto($_POST['nombre']);
             echo json_encode($producto);
+            break;
+        case 'obtenerImgDefault':
+            $imagen = file_get_contents('../content/img_muestra.jpg');
+            echo base64_encode($imagen);
+            break;
         default:
             $respuesta["error"] = "Comando invalido";
             echo json_encode($respuesta);

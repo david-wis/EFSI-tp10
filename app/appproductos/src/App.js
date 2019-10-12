@@ -177,8 +177,12 @@ class Tabla extends React.Component {
               onClick: (e, handleOriginal) => {
                 if (rowInfo === undefined) {
                   if (!this.state.pagNueva){
-                    const data = [...this.state.data, new Producto()];
-                    this.setState({data: data, pagNueva: true});
+                    let prod = new Producto();
+                    Producto.ObtenerFotoDefault().then(base64img => {
+                      prod.Imagen = base64img;
+                      const data = [...this.state.data, prod];
+                      this.setState({data: data, pagNueva: true});
+                    });
                   }
                 }
                 if (handleOriginal) {
