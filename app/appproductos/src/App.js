@@ -1,9 +1,9 @@
 import React from 'react';
 //import './App.css';
-import ReactTable from 'react-table'
-import 'react-table/react-table.css'
+import ReactTable from 'react-table';
+import 'react-table/react-table.css';
 import $ from "jquery";
-import Producto from "./Producto.js"
+import Producto from "./Producto.js";
 
 class Tabla extends React.Component {
   constructor() {
@@ -17,6 +17,8 @@ class Tabla extends React.Component {
     this.fetchData = this.fetchData.bind(this);
     this.renderEditable = this.renderEditable.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
+    this.eliminarClick = this.eliminarClick.bind(this);
+    this.agregarProducto = this.agregarProducto.bind(this);
   }
  
   fetchData(state, instance){
@@ -46,16 +48,21 @@ class Tabla extends React.Component {
   }
 
   handleImageChange(btn, index) {
-    let archivo = btn.files[0];
-    let reader  = new FileReader();
-    reader.onloadend = () => {
-      let producto = {...this.state.data[index], Nuevonombre: this.state.data[index].Nombre};
-      producto.Imagen = reader.result.substring(23); //Recortamos el data:image/jpeg;base64,
-      this.modificarTabla(producto, index);
-    }
-    if (archivo) {
-      reader.readAsDataURL(archivo);
-    }
+    let data = [...this.state.data];
+    if (index !== data.length-1 && !this.state.pagNueva) {
+      let archivo = btn.files[0];
+      let reader  = new FileReader();
+      reader.onloadend = () => {
+        let producto = {...this.state.data[index], Nuevonombre: this.state.data[index].Nombre};
+        producto.Imagen = reader.result.substring(23); //Recortamos el data:image/jpeg;base64,
+        this.modificarTabla(producto, index);
+      }
+      if (archivo) {
+        reader.readAsDataURL(archivo);
+      }
+    } else {
+      //TODO: Modificar estado sin llamar a la api
+    }  
   }
 
   modificarTabla(producto, index) {
@@ -90,8 +97,12 @@ class Tabla extends React.Component {
     return exito;
   }
 
-  agregarProducto() {
-    
+  agregarProducto(index) {
+    if (this.validarFila(index)) {
+      alert("OK");
+    } else {
+      alert("No ok");
+    }
   }
 
 
@@ -105,18 +116,12 @@ class Tabla extends React.Component {
           /*let data = [...this.state.data];
           const nomViejo = data[cellInfo.index].Nombre;
           data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;*/
-          if (this.state.pagNueva && cellInfo.index === this.state.data.length-1) { //Si estamos en una fila nueva no se manda nada a la bd
-            let fin = this.validarFila(cellInfo.index);
-            if (fin) {
-              console.log("termine");
-              this.agregarProducto();
-            } else {
-              console.log("cool");
-            }
-          } else {
+          let data = [...this.state.data];
+          if (cellInfo.index !== data.length-1 && !this.state.pagNueva) {
             this.actualizarTabla(e.target.innerHTML, cellInfo.index, cellInfo.column.id);
-          }
-          
+          } else {
+            //TODO: Modificar estado sin llamar a la api
+          }          
         }}
         dangerouslySetInnerHTML={{
           __html: this.state.data[cellInfo.index][cellInfo.column.id]
@@ -124,6 +129,23 @@ class Tabla extends React.Component {
         key={Date()} //Arregla el bug del dangerouslySetinnerHTML
       />
     );
+  }
+
+  eliminarClick(index) {
+    let data = [...this.state.data];
+    let nombre = data[index].Nombre;
+    data.splice(index, 1);
+    this.setState({data: data});
+    if (index !== data.length-1 && !this.state.pagNueva) {
+      $.ajax({
+        url: 'http://localhost/tp10/api/controller/productoController.php?action=eliminar',
+        method: "POST",
+        data: {nombre: nombre}
+      }).done(() =>{
+        console.log("Borrado en la API exitoso");
+      });
+    }
+    
   }
 
   render() {
@@ -164,6 +186,21 @@ class Tabla extends React.Component {
               Header: "Stock",
               accessor: "Stock",
               Cell: this.renderEditable
+            },
+            {
+              Header: "",
+              Cell: (row) => {
+                let visibilidad = "none";
+                if (this.state.data[row.index].btnEliminar) {
+                  visibilidad = this.state.data[row.index].btnEliminar;
+                }
+                return (
+                  <div>
+                    <i style={{display: visibilidad}} onClick={_ => {this.agregarProducto(row.index)}} class="material-icons" data-toggle="tooltip" title="OK">done</i>
+                    <i onClick={_ => {this.eliminarClick(row.index)}} class="material-icons" data-toggle="tooltip" title="Eliminar">&#xE872;</i>
+                  </div>
+                );
+              }
             }
           ]}
           data={data}
@@ -178,6 +215,7 @@ class Tabla extends React.Component {
                 if (rowInfo === undefined) {
                   if (!this.state.pagNueva){
                     let prod = new Producto();
+                    prod.btnEliminar = "visible";
                     Producto.ObtenerFotoDefault().then(base64img => {
                       prod.Imagen = base64img;
                       const data = [...this.state.data, prod];

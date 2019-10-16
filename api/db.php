@@ -27,8 +27,8 @@ class DB {
 
     public static function EliminarProducto($pdo, $nombre) {
         try{
-            $sth = $pdo->prepare("CALL sp_EliminarProducto(:nombre");
-            $sth->bindParam(':nombre', $producto->nombre);
+            $sth = $pdo->prepare("CALL sp_EliminarProducto(:nombre)");
+            $sth->bindParam(':nombre', $nombre);
             $sth->execute();
         } catch (Exception $e) {
             echo "Fallo ".$e->getMessage();
