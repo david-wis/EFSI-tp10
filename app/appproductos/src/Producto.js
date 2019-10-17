@@ -7,7 +7,7 @@ export default class Producto {
         this.Imagen = "";
         this.Precio = 0;
         this.Stock = 0;
-        this.btnEliminar = "none";
+        this.Nuevo = true;
     }
 
     static ObtenerFotoDefault = async() => {

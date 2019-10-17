@@ -12,14 +12,13 @@ class Tabla extends React.Component {
       data: [],
       pages: null,
       loading: true,
-      prodNuevo: false,
-      enviando: false
+      prodNuevo: false
     };
     this.fetchData = this.fetchData.bind(this);
     this.renderEditable = this.renderEditable.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
     this.eliminarClick = this.eliminarClick.bind(this);
-    //this.agregarProducto = this.agregarProducto.bind(this);
+    this.agregarProducto = this.agregarProducto.bind(this);
   }
  
   fetchData(state, instance){
@@ -102,7 +101,6 @@ class Tabla extends React.Component {
   }
 
   agregarProducto(index) {
-    alert("hola");
     if (this.validarFila(index)) {
       let data = [...this.state.data];
       let producto = data[index];
@@ -114,6 +112,9 @@ class Tabla extends React.Component {
       }).done((result, textStatus, jqXHR) => {
         if (result.status === "success") {
           console.log("Exito al actualizar los datos ");
+          producto.Nuevo = false;
+          data[index] = producto;
+          this.setState({data: data, prodNuevo: false});
           console.log(result);
         } else {
           console.log(result);
@@ -128,7 +129,6 @@ class Tabla extends React.Component {
     }
   }
 
-
   renderEditable(cellInfo) {
     return (
       <div
@@ -136,22 +136,26 @@ class Tabla extends React.Component {
         contentEditable
         suppressContentEditableWarning
         onBlur={e => {
+          console.log("blur!");
           let data = [...this.state.data];
           if (!(this.state.prodNuevo && cellInfo.index === data.length-1)) {
             this.actualizarTabla(e.target.innerHTML, cellInfo.index, cellInfo.column.id);
-          } else {
+          }/*else {
             let producto = data[cellInfo.index];
             producto[cellInfo.column.id] = e.target.innerHTML;
             data[cellInfo.index] = producto;
-            this.setState({data: data}, () => {
-              if (this.state.enviando) {
-                this.agregarProducto(cellInfo.index);
-                this.setState({enviando: false});
-                this.setState({prodNuevo: false});
-              }
-            });
-          }     
+            this.setState({data: data});
+          }*/
         }}
+
+        onInput={e => {
+          let data = [...this.state.data];
+          let producto = data[cellInfo.index];
+          producto[cellInfo.column.id] = e.target.innerHTML;
+          data[cellInfo.index] = producto;
+          this.setState({data: data});
+        }}
+
         dangerouslySetInnerHTML={{
           __html: this.state.data[cellInfo.index][cellInfo.column.id]
         }}
@@ -163,8 +167,6 @@ class Tabla extends React.Component {
   eliminarClick(index) {
     let data = [...this.state.data];
     let nombre = data[index].Nombre;
-    data.splice(index, 1);
-    this.setState({data: data});
 
     if (!(this.state.prodNuevo && index === data.length-1)) {
       $.ajax({
@@ -174,7 +176,12 @@ class Tabla extends React.Component {
       }).done(() =>{
         console.log("Borrado en la API exitoso");
       });
+    } else {
+      this.setState({prodNuevo: false});
     }
+    
+    data.splice(index, 1);
+    this.setState({data: data});
   }
 
   render() {
@@ -219,16 +226,14 @@ class Tabla extends React.Component {
             {
               Header: "",
               Cell: (row) => {
-                let visibilidad = "none";
-                if (this.state.data[row.index].btnEliminar) {
-                  visibilidad = this.state.data[row.index].btnEliminar;
-                }
                 return (
                   <div>
-                    <a style={{display: visibilidad}} onMouseDown={_ => {this.setState({enviando: true})}}>
-                      <i class="material-icons" data-toggle="tooltip" title="OK">done</i>
-                    </a>
-                    <i onClick={_ => {this.eliminarClick(row.index)}} class="material-icons" data-toggle="tooltip" title="Eliminar">&#xE872;</i>
+                    {this.state.data[row.index].Nuevo ? 
+                      <a onMouseDown={_ => {this.agregarProducto(row.index)}}>
+                        <i className="material-icons" data-toggle="tooltip" title="OK">done</i>
+                      </a> : null
+                    }
+                    <i onClick={_ => {this.eliminarClick(row.index)}} className="material-icons" data-toggle="tooltip" title="Eliminar">&#xE872;</i>
                   </div>
                 );
               }
@@ -246,7 +251,6 @@ class Tabla extends React.Component {
                 if (rowInfo === undefined) {
                   if (!this.state.prodNuevo){
                     let prod = new Producto();
-                    prod.btnEliminar = "visible";
                     Producto.ObtenerFotoDefault().then(base64img => {
                       prod.Imagen = base64img;
                       const data = [...this.state.data, prod];
