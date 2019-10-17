@@ -49,20 +49,22 @@ class Tabla extends React.Component {
 
   handleImageChange(btn, index) {
     let data = [...this.state.data];
-    if (index !== data.length-1 && !this.state.pagNueva) {
-      let archivo = btn.files[0];
-      let reader  = new FileReader();
-      reader.onloadend = () => {
-        let producto = {...this.state.data[index], Nuevonombre: this.state.data[index].Nombre};
-        producto.Imagen = reader.result.substring(23); //Recortamos el data:image/jpeg;base64,
+    let archivo = btn.files[0];
+    let reader  = new FileReader();
+    reader.onloadend = () => {
+      let producto = {...this.state.data[index], Nuevonombre: this.state.data[index].Nombre};
+      producto.Imagen = reader.result.substring(23); //Recortamos el data:image/jpeg;base64,
+      if (!(this.state.pagNueva && index === data.length-1)) {
         this.modificarTabla(producto, index);
+      } else {
+        data[index] = producto;
+        this.setState({data: data});
       }
-      if (archivo) {
-        reader.readAsDataURL(archivo);
-      }
-    } else {
-      //TODO: Modificar estado sin llamar a la api
-    }  
+      
+    }
+    if (archivo) {
+      reader.readAsDataURL(archivo);
+    }
   }
 
   modificarTabla(producto, index) {
@@ -117,11 +119,14 @@ class Tabla extends React.Component {
           const nomViejo = data[cellInfo.index].Nombre;
           data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;*/
           let data = [...this.state.data];
-          if (cellInfo.index !== data.length-1 && !this.state.pagNueva) {
+          if (!(this.state.pagNueva && cellInfo.index === data.length-1)) {
             this.actualizarTabla(e.target.innerHTML, cellInfo.index, cellInfo.column.id);
           } else {
-            //TODO: Modificar estado sin llamar a la api
-          }          
+            let producto = data[cellInfo.index];
+            producto[cellInfo.column.id] = e.target.innerHTML;
+            data[cellInfo.index] = producto;
+            this.setState({data: data});
+          }     
         }}
         dangerouslySetInnerHTML={{
           __html: this.state.data[cellInfo.index][cellInfo.column.id]
@@ -136,7 +141,8 @@ class Tabla extends React.Component {
     let nombre = data[index].Nombre;
     data.splice(index, 1);
     this.setState({data: data});
-    if (index !== data.length-1 && !this.state.pagNueva) {
+
+    if (!(this.state.pagNueva && index === data.length-1)) {
       $.ajax({
         url: 'http://localhost/tp10/api/controller/productoController.php?action=eliminar',
         method: "POST",
@@ -145,7 +151,6 @@ class Tabla extends React.Component {
         console.log("Borrado en la API exitoso");
       });
     }
-    
   }
 
   render() {
