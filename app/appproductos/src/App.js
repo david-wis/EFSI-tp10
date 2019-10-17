@@ -12,7 +12,7 @@ class Tabla extends React.Component {
       data: [],
       pages: null,
       loading: true,
-      pagNueva: false
+      prodNuevo: false
     };
     this.fetchData = this.fetchData.bind(this);
     this.renderEditable = this.renderEditable.bind(this);
@@ -54,7 +54,7 @@ class Tabla extends React.Component {
     reader.onloadend = () => {
       let producto = {...this.state.data[index], Nuevonombre: this.state.data[index].Nombre};
       producto.Imagen = reader.result.substring(23); //Recortamos el data:image/jpeg;base64,
-      if (!(this.state.pagNueva && index === data.length-1)) {
+      if (!(this.state.prodNuevo && index === data.length-1)) {
         this.modificarTabla(producto, index);
       } else {
         data[index] = producto;
@@ -101,7 +101,25 @@ class Tabla extends React.Component {
 
   agregarProducto(index) {
     if (this.validarFila(index)) {
-      alert("OK");
+      let data = [...this.state.data];
+      let producto = data[index];
+      $.ajax({
+        url: 'http://localhost/tp10/api/controller/productoController.php?action=agregar',
+        method: 'POST',
+        dataType: "json",
+        data: producto
+      }).done((result, textStatus, jqXHR) => {
+        if (result.status === "success") {
+          console.log("Exito al actualizar los datos ");
+          console.log(result);
+        } else {
+          console.log(result);
+          this.setState({data: this.state.data});
+        }
+      }).fail((jqXHR, textStatus, errorThrown) => {
+        console.log("Error al actualizar los datos: " + jqXHR.responseText);
+        this.setState({data: this.state.data});
+      });
     } else {
       alert("No ok");
     }
@@ -115,11 +133,8 @@ class Tabla extends React.Component {
         contentEditable
         suppressContentEditableWarning
         onBlur={e => {
-          /*let data = [...this.state.data];
-          const nomViejo = data[cellInfo.index].Nombre;
-          data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;*/
           let data = [...this.state.data];
-          if (!(this.state.pagNueva && cellInfo.index === data.length-1)) {
+          if (!(this.state.prodNuevo && cellInfo.index === data.length-1)) {
             this.actualizarTabla(e.target.innerHTML, cellInfo.index, cellInfo.column.id);
           } else {
             let producto = data[cellInfo.index];
@@ -142,7 +157,7 @@ class Tabla extends React.Component {
     data.splice(index, 1);
     this.setState({data: data});
 
-    if (!(this.state.pagNueva && index === data.length-1)) {
+    if (!(this.state.prodNuevo && index === data.length-1)) {
       $.ajax({
         url: 'http://localhost/tp10/api/controller/productoController.php?action=eliminar',
         method: "POST",
@@ -218,13 +233,13 @@ class Tabla extends React.Component {
             return {
               onClick: (e, handleOriginal) => {
                 if (rowInfo === undefined) {
-                  if (!this.state.pagNueva){
+                  if (!this.state.prodNuevo){
                     let prod = new Producto();
                     prod.btnEliminar = "visible";
                     Producto.ObtenerFotoDefault().then(base64img => {
                       prod.Imagen = base64img;
                       const data = [...this.state.data, prod];
-                      this.setState({data: data, pagNueva: true});
+                      this.setState({data: data, prodNuevo: true});
                     });
                   }
                 }

@@ -1,24 +1,36 @@
 <?php
     include_once('../model/producto.php');
     include_once('../db.php');
+    include_once('../helpers.php');
     class ProductoDao {
         public static function AgregarProducto($producto){
             $result = true;
             $productoNuevo = new Producto();
-            $result = $result && Validar($productoNuevo->setNombre, $producto['nombre'], 'string'); 
-            $result = $result && Validar($productoNuevo->setDescripcion, $producto['descripcion'], 'string');
-            $result = $result && Validar($productoNuevo->setImagen, $producto['imagen']);
-            $result = $result && Validar($productoNuevo->setPrecio, $producto['precio'], 'float');
-            $result = $result && Validar($productoNuevo->setStock, $producto['stock'], 'int');
+            $result = $result && self::Validar(array($productoNuevo, 'setNombre'), $producto['nuevonombre'], 'string'); 
+            $result = $result && self::Validar(array($productoNuevo, 'setDescripcion'), $producto['descripcion'], 'string');
+            $result = $result && self::Validar(array($productoNuevo, 'setImagen'), $producto['imagen']);
+            $result = $result && self::Validar(array($productoNuevo, 'setPrecio'), $producto['precio'], 'float');
+            $result = $result && self::Validar(array($productoNuevo, 'setStock'), $producto['stock'], 'int');
             if($result){
-                $bd = DB::Connect();
-                DB::AgregarProducto($bd, $producto);
-                DB::Disconnect($bd);
+                $productoNuevo->convertirImgABlob();
+                if (floor(strlen($productoNuevo->getImagen())/1024) < 64) { //El blob solo aguanta hasta 64kb
+                    $bd = DB::Connect();
+                    if (DB::AgregarProducto($bd, $productoNuevo)){
+                        $result = Helpers::Resultado['Exito'];
+                    }
+                    else {
+                        $result = Helpers::Resultado['NombreRepetido'];
+                    }
+                    DB::Disconnect($bd);
+                } else {
+                    $result = Helpers::Resultado['FotoGrande'];
+                }
+            } else {
+                $result = Helpers::Resultado['Error'];
             }
             return $result;       
         }        
 
-        //0 = Error, 1 = Exito, -1 = Foto demasiado grande
         public static function ModificarProducto($producto){
             $result = true;
             $productoModificado = new Producto();
@@ -33,15 +45,18 @@
             if($result){
                 $productoModificado->convertirImgABlob();
                 if (floor(strlen($productoModificado->getImagen())/1024) < 64) { //El blob solo aguanta hasta 64kb
-                    $result = 1;
                     $bd = DB::Connect();
-                    DB::ModificarProducto($bd, $producto['nombre'], $productoModificado);
+                    if (DB::ModificarProducto($bd, $producto['nombre'], $productoModificado)) {
+                        $result = Helpers::Resultado['Exito'];
+                    } else {
+                        $result = Helpers::Resultado['NombreRepetido'];
+                    }
                     DB::Disconnect($bd);
                 } else {
-                    $result = -1;
+                    $result = Helpers::Resultado['FotoGrande'];
                 }
             } else {
-                $result = 0;
+                $result = Helpers::Resultado['Error'];
             }
             return $result;
         }

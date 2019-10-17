@@ -12,6 +12,7 @@ class DB {
     }
 
     public static function AgregarProducto($pdo, $producto) {
+        $exito = true;
         try{
             $sth = $pdo->prepare("CALL sp_AgregarProducto(:nombre,:descripcion,:imagen,:precio,:stock)");
             $sth->bindParam(':nombre', $producto->nombre);
@@ -20,9 +21,14 @@ class DB {
             $sth->bindParam(':precio', $producto->precio);
             $sth->bindParam(':stock', $producto->stock);
             $sth->execute();
+            $result = $sth->fetch(PDO::FETCH_ASSOC);
+            if (array_key_exists('Error', $result)){
+                $exito = false;
+            }
         } catch (Exception $e) {
             echo "Fallo ".$e->getMessage();
         }
+        return $exito;
     }
 
     public static function EliminarProducto($pdo, $nombre) {
@@ -36,6 +42,7 @@ class DB {
     }
 
     public static function ModificarProducto($pdo, $nombre, $producto) {
+        $exito = true;
         try{
             $sth = $pdo->prepare("CALL sp_ModificarProducto(:nombre,:descripcion,:imagen,:precio,:stock,:nuevoNom)");
 
@@ -53,7 +60,10 @@ class DB {
             $sth->bindParam(':nuevoNom', $nuevoNombre);
             $sth->execute();
 
-            //echo $nombre." ".$descripcion." ".$imagen." ".$precio." ".$stock." ".$nuevoNombre;
+            $result = $sth->fetch(PDO::FETCH_ASSOC);
+            if (array_key_exists('Error', $result)){
+                $exito = false;
+            }
         } catch (Exception $e) {
             echo "Fallo ".$e->getMessage();
         }

@@ -5,6 +5,7 @@
     header("Allow: GET, POST, OPTIONS, PUT, DELETE");
 
     require_once('../dao/productoDao.php');
+    include_once('../helpers.php');
     $action = isset($_POST['action']) ? $_POST['action'] : $_GET['action'];
     switch ($action) {
         case 'agregar':
@@ -17,7 +18,16 @@
             $producto["imagen"] = $_POST['imagen'];
             $producto["precio"] = $_POST['precio'];
             $producto["stock"] = $_POST['stock'];
-            ProductoDao::AgregarProducto($producto);
+            $resultado = ProductoDao::AgregarProducto($producto);
+            if ($resultado == Helpers::Resultado['Exito']) {
+                echo json_encode(array("status" => 'success'));
+            } else if ($resultado == Helpers::Resultado['Error']) {
+                echo json_encode(array("status" => 'error', "msg" => 'El dato ingresado no es valido'));
+            } else if ($resultado == Helpers::Resultado['FotoGrande']){
+                echo json_encode(array("status" => 'error', "msg" => 'La foto es demasiado grande'));
+            } else {
+                echo json_encode(array("status" => 'error', "msg" => 'El nombre ya existe'));
+            }
             break;
         case 'modificar':
             $producto = array();
@@ -28,12 +38,14 @@
             $producto["stock"] = $_POST['Stock'];
             $producto["nuevonombre"] = $_POST['Nuevonombre'];
             $resultado = ProductoDao::ModificarProducto($producto);
-            if ($resultado == 1) {
+            if ($resultado == Helpers::Resultado['Exito']) {
                 echo json_encode(array("status" => 'success'));
-            } else if ($resultado == 0) {
+            } else if ($resultado == Helpers::Resultado['Error']) {
                 echo json_encode(array("status" => 'error', "msg" => 'El dato ingresado no es valido'));
-            } else {
+            } else if ($resultado == Helpers::Resultado['FotoGrande']){
                 echo json_encode(array("status" => 'error', "msg" => 'La foto es demasiado grande'));
+            } else {
+                echo json_encode(array("status" => 'error', "msg" => 'El nombre ya existe'));
             }
             break;
         case 'eliminar':
