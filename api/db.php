@@ -15,12 +15,20 @@ class DB {
         $exito = true;
         try{
             $sth = $pdo->prepare("CALL sp_AgregarProducto(:nombre,:descripcion,:imagen,:precio,:stock)");
-            $sth->bindParam(':nombre', $producto->nombre);
-            $sth->bindParam(':descripcion', $producto->descripcion);
-            $sth->bindParam(':imagen', $producto->imagen);
-            $sth->bindParam(':precio', $producto->precio);
-            $sth->bindParam(':stock', $producto->stock);
+            
+            $nombre = $producto->getNombre();
+            $descripcion = $producto->getDescripcion();
+            $imagen = $producto->getImagen();
+            $precio = $producto->getPrecio();
+            $stock = $producto->getStock();
+
+            $sth->bindParam(':nombre', $nombre);
+            $sth->bindParam(':descripcion', $descripcion);
+            $sth->bindParam(':imagen', $imagen);
+            $sth->bindParam(':precio', $precio);
+            $sth->bindParam(':stock', $stock);
             $sth->execute();
+
             $result = $sth->fetch(PDO::FETCH_ASSOC);
             if ($result) {
                 if (array_key_exists('Error', $result)){

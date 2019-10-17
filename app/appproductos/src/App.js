@@ -12,13 +12,14 @@ class Tabla extends React.Component {
       data: [],
       pages: null,
       loading: true,
-      prodNuevo: false
+      prodNuevo: false,
+      enviando: false
     };
     this.fetchData = this.fetchData.bind(this);
     this.renderEditable = this.renderEditable.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
     this.eliminarClick = this.eliminarClick.bind(this);
-    this.agregarProducto = this.agregarProducto.bind(this);
+    //this.agregarProducto = this.agregarProducto.bind(this);
   }
  
   fetchData(state, instance){
@@ -101,6 +102,7 @@ class Tabla extends React.Component {
   }
 
   agregarProducto(index) {
+    alert("hola");
     if (this.validarFila(index)) {
       let data = [...this.state.data];
       let producto = data[index];
@@ -141,7 +143,13 @@ class Tabla extends React.Component {
             let producto = data[cellInfo.index];
             producto[cellInfo.column.id] = e.target.innerHTML;
             data[cellInfo.index] = producto;
-            this.setState({data: data});
+            this.setState({data: data}, () => {
+              if (this.state.enviando) {
+                this.agregarProducto(cellInfo.index);
+                this.setState({enviando: false});
+                this.setState({prodNuevo: false});
+              }
+            });
           }     
         }}
         dangerouslySetInnerHTML={{
@@ -217,7 +225,9 @@ class Tabla extends React.Component {
                 }
                 return (
                   <div>
-                    <i style={{display: visibilidad}} onClick={_ => {this.agregarProducto(row.index)}} class="material-icons" data-toggle="tooltip" title="OK">done</i>
+                    <a style={{display: visibilidad}} onMouseDown={_ => {this.setState({enviando: true})}}>
+                      <i class="material-icons" data-toggle="tooltip" title="OK">done</i>
+                    </a>
                     <i onClick={_ => {this.eliminarClick(row.index)}} class="material-icons" data-toggle="tooltip" title="Eliminar">&#xE872;</i>
                   </div>
                 );
