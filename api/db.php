@@ -22,8 +22,10 @@ class DB {
             $sth->bindParam(':stock', $producto->stock);
             $sth->execute();
             $result = $sth->fetch(PDO::FETCH_ASSOC);
-            if (array_key_exists('Error', $result)){
-                $exito = false;
+            if ($result) {
+                if (array_key_exists('Error', $result)){
+                    $exito = false;
+                }
             }
         } catch (Exception $e) {
             echo "Fallo ".$e->getMessage();
@@ -61,12 +63,15 @@ class DB {
             $sth->execute();
 
             $result = $sth->fetch(PDO::FETCH_ASSOC);
-            if (array_key_exists('Error', $result)){
-                $exito = false;
-            }
+            if ($result) {
+                if (array_key_exists('Error', $result)){
+                    $exito = false;
+                }
+            }   
         } catch (Exception $e) {
             echo "Fallo ".$e->getMessage();
         }
+        return $exito;
     }
 
     public static function ObtenerProducto($pdo, $nombre) {

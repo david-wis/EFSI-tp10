@@ -68,6 +68,7 @@ class Tabla extends React.Component {
   }
 
   modificarTabla(producto, index) {
+    console.log(producto);
     $.ajax({
       url: 'http://localhost/tp10/api/controller/productoController.php?action=modificar',
       method: 'POST',

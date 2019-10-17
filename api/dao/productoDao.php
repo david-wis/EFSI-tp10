@@ -6,7 +6,7 @@
         public static function AgregarProducto($producto){
             $result = true;
             $productoNuevo = new Producto();
-            $result = $result && self::Validar(array($productoNuevo, 'setNombre'), $producto['nuevonombre'], 'string'); 
+            $result = $result && self::Validar(array($productoNuevo, 'setNombre'), $producto['nombre'], 'string'); 
             $result = $result && self::Validar(array($productoNuevo, 'setDescripcion'), $producto['descripcion'], 'string');
             $result = $result && self::Validar(array($productoNuevo, 'setImagen'), $producto['imagen']);
             $result = $result && self::Validar(array($productoNuevo, 'setPrecio'), $producto['precio'], 'float');
