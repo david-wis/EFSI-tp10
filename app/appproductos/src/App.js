@@ -4,6 +4,7 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import $ from "jquery";
 import Producto from "./Producto.js";
+import {ImgUploader, Botoncitos} from './Extras.js';
 
 class Tabla extends React.Component {
   constructor() {
@@ -150,10 +151,12 @@ class Tabla extends React.Component {
 
         onInput={e => {
           let data = [...this.state.data];
-          let producto = data[cellInfo.index];
-          producto[cellInfo.column.id] = e.target.innerHTML;
-          data[cellInfo.index] = producto;
-          this.setState({data: data});
+          if (this.state.prodNuevo && cellInfo.index === data.length-1) {
+            let producto = data[cellInfo.index];
+            producto[cellInfo.column.id] = e.target.innerHTML;
+            data[cellInfo.index] = producto;
+            this.setState({data: data});
+          }
         }}
 
         dangerouslySetInnerHTML={{
@@ -204,12 +207,7 @@ class Tabla extends React.Component {
               Header: "Imagen",
               Cell: (row) => {
                 //console.log(row.value);
-                return (
-                  <div>
-                    <img style={{display: "block"}} width="100" height="100" alt="Foto no encontrada" src={"data:image/jpeg;base64,"+row.value}></img>
-                    <input style={{display: "block"}} type="file" onChange={(e) => {this.handleImageChange(e.target, row.index)}} accept='.jpg'/>
-                  </div>
-                );
+                return <ImgUploader img64={row.value} handleImageChange={(e) => {this.handleImageChange(e.target, row.index)}}/>;
               },
               accessor: "Imagen"
             },
@@ -226,16 +224,11 @@ class Tabla extends React.Component {
             {
               Header: "",
               Cell: (row) => {
-                return (
-                  <div>
-                    {this.state.data[row.index].Nuevo ? 
-                      <a onMouseDown={_ => {this.agregarProducto(row.index)}}>
-                        <i className="material-icons" data-toggle="tooltip" title="OK">done</i>
-                      </a> : null
-                    }
-                    <i onClick={_ => {this.eliminarClick(row.index)}} className="material-icons" data-toggle="tooltip" title="Eliminar">&#xE872;</i>
-                  </div>
-                );
+                return <Botoncitos 
+                          nuevo={this.state.data[row.index].Nuevo} 
+                          agregarProducto={_ => {this.agregarProducto(row.index)}} 
+                          eliminarClick={_ => {this.eliminarClick(row.index)}}
+                        />;
               }
             }
           ]}
