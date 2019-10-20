@@ -4,7 +4,7 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import $ from "jquery";
 import Producto from "./Producto.js";
-import {ImgUploader, Botoncitos} from './Extras.js';
+import {ImgUploader, Botoncitos, setEndOfContenteditable} from './Extras.js';
 
 class Tabla extends React.Component {
   constructor() {
@@ -16,7 +16,7 @@ class Tabla extends React.Component {
       prodNuevo: false,
       ultimaCeldaModificada: null
     };
-    this.celdas = [];
+    this.celdas = []; //refs a todas las celdas
     this.fetchData = this.fetchData.bind(this);
     this.renderEditable = this.renderEditable.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
@@ -189,24 +189,16 @@ class Tabla extends React.Component {
   }
 
   //Magia de bajo nivel para que el cursor se ponga donde se tiene que poner cuando se editan los contenteditables
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate() {
     let {ultimaCeldaModificada} = this.state;
     if (ultimaCeldaModificada != null) {
-      this.celdas[ultimaCeldaModificada[0]][ultimaCeldaModificada[1]].focus(); //Recuperamos el focus en la celda donde se produjo el oninput
-      let nodoHijo = this.celdas[ultimaCeldaModificada[0]][ultimaCeldaModificada[1]].lastChild;
-      let txt = nodoHijo.textContent.replace(/&nbsp;/g, ' ');
-      
-      //Necesitamos seleccionar la ultima parte del texto para simular el desplazamiento del cursor
-      let range = document.createRange();
-      range.setStart(nodoHijo, txt.length);
-      range.setEnd(nodoHijo, txt.length); 
-      
-      //La verdad no entendi que hace esto pero funciona
-      //Creo que saca todo lo seleccionado y pone el rango que armamos nosotros
-      var sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-      
+      try {
+        let contentEditableElement = this.celdas[ultimaCeldaModificada[0]][ultimaCeldaModificada[1]]; 
+        contentEditableElement.focus(); //Recuperamos el focus en la celda donde se produjo el oninput
+        setEndOfContenteditable(contentEditableElement); //Ponemos el cursor al final
+      } catch (e) {
+        console.log(e);
+      }
       ultimaCeldaModificada = null; //Ya no es necesario volver a focusear nada la próxima
       this.setState({ultimaCeldaModificada: ultimaCeldaModificada});
     }
