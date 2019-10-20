@@ -1,5 +1,5 @@
 Bugs:
-- Input hace perder el focus
-- Borrar al modificar
+- Input hace perder el focus ✓
+- Borrar al modificar 
 - Ordenar la tabla con elementos nuevos?
-- Modificar el precio corre la imagen en producto nuevo
+- Modificar el precio corre la imagen en producto nuevo ✓?

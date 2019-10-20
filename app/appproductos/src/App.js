@@ -13,8 +13,10 @@ class Tabla extends React.Component {
       data: [],
       pages: null,
       loading: true,
-      prodNuevo: false
+      prodNuevo: false,
+      ultimaCeldaModificada: null
     };
+    this.celdas = [];
     this.fetchData = this.fetchData.bind(this);
     this.renderEditable = this.renderEditable.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
@@ -28,6 +30,9 @@ class Tabla extends React.Component {
       url: 'http://localhost/tp10/api/controller/productoController.php?action=obtenerTodos',
       dataType: "json"
     }).done((data) =>{
+      data.forEach(producto => {
+        this.celdas.push([]);
+      });
       this.setState({
         data: data,
         pages: data.length,
@@ -133,20 +138,15 @@ class Tabla extends React.Component {
   renderEditable(cellInfo) {
     return (
       <div
+        ref={(ref) => this.celdas[cellInfo.index][cellInfo.column.id] = ref}
         style={{ backgroundColor: "#fafafa" }}
         contentEditable
         suppressContentEditableWarning
         onBlur={e => {
-          console.log("blur!");
           let data = [...this.state.data];
           if (!(this.state.prodNuevo && cellInfo.index === data.length-1)) {
             this.actualizarTabla(e.target.innerHTML, cellInfo.index, cellInfo.column.id);
-          }/*else {
-            let producto = data[cellInfo.index];
-            producto[cellInfo.column.id] = e.target.innerHTML;
-            data[cellInfo.index] = producto;
-            this.setState({data: data});
-          }*/
+          }
         }}
 
         onInput={e => {
@@ -155,7 +155,8 @@ class Tabla extends React.Component {
             let producto = data[cellInfo.index];
             producto[cellInfo.column.id] = e.target.innerHTML;
             data[cellInfo.index] = producto;
-            this.setState({data: data});
+            let ultimaCeldaModificada = [cellInfo.index, cellInfo.column.id];
+            this.setState({data: data, ultimaCeldaModificada: ultimaCeldaModificada});
           }
         }}
 
@@ -187,8 +188,32 @@ class Tabla extends React.Component {
     this.setState({data: data});
   }
 
+  //Magia de bajo nivel para que el cursor se ponga donde se tiene que poner cuando se editan los contenteditables
+  componentDidUpdate() {
+    let {ultimaCeldaModificada} = this.state;
+    if (ultimaCeldaModificada != null) {
+      this.celdas[ultimaCeldaModificada[0]][ultimaCeldaModificada[1]].focus(); //Recuperamos el focus en la celda donde se produjo el oninput
+      let nodoHijo = this.celdas[ultimaCeldaModificada[0]][ultimaCeldaModificada[1]].firstChild;
+      let txt = this.celdas[ultimaCeldaModificada[0]][ultimaCeldaModificada[1]].innerHTML;
+      
+      //Necesitamos seleccionar la ultima parte del texto para simular el desplazamiento del cursor
+      let range = document.createRange();
+      range.setStart(nodoHijo, txt.length);
+      range.setEnd(nodoHijo, txt.length); 
+      
+      //La verdad no entendi que hace esto pero funciona
+      //Creo que saca todo lo seleccionado y pone el rango que armamos nosotros
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      
+      ultimaCeldaModificada = null; //Ya no es necesario volver a focusear nada la próxima
+      this.setState({ultimaCeldaModificada: ultimaCeldaModificada});
+    }
+  }
+
   render() {
-    const { data, pages, loading } = this.state;
+    const { data, pages, loading} = this.state;
     return (
       <div>
         <ReactTable
@@ -206,7 +231,6 @@ class Tabla extends React.Component {
             {
               Header: "Imagen",
               Cell: (row) => {
-                //console.log(row.value);
                 return <ImgUploader img64={row.value} handleImageChange={(e) => {this.handleImageChange(e.target, row.index)}}/>;
               },
               accessor: "Imagen"
@@ -225,7 +249,7 @@ class Tabla extends React.Component {
               Header: "",
               Cell: (row) => {
                 return <Botoncitos 
-                          nuevo={this.state.data[row.index].Nuevo} 
+                          nuevo={data[row.index].Nuevo} 
                           agregarProducto={_ => {this.agregarProducto(row.index)}} 
                           eliminarClick={_ => {this.eliminarClick(row.index)}}
                         />;
@@ -243,6 +267,7 @@ class Tabla extends React.Component {
               onClick: (e, handleOriginal) => {
                 if (rowInfo === undefined) {
                   if (!this.state.prodNuevo){
+                    this.celdas.push([]); //Reconozco que esto es poner una curita en una fractura expuesta pero al menos funciona
                     let prod = new Producto();
                     Producto.ObtenerFotoDefault().then(base64img => {
                       prod.Imagen = base64img;
