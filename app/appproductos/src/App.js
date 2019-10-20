@@ -189,12 +189,12 @@ class Tabla extends React.Component {
   }
 
   //Magia de bajo nivel para que el cursor se ponga donde se tiene que poner cuando se editan los contenteditables
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     let {ultimaCeldaModificada} = this.state;
     if (ultimaCeldaModificada != null) {
       this.celdas[ultimaCeldaModificada[0]][ultimaCeldaModificada[1]].focus(); //Recuperamos el focus en la celda donde se produjo el oninput
-      let nodoHijo = this.celdas[ultimaCeldaModificada[0]][ultimaCeldaModificada[1]].firstChild;
-      let txt = this.celdas[ultimaCeldaModificada[0]][ultimaCeldaModificada[1]].innerHTML;
+      let nodoHijo = this.celdas[ultimaCeldaModificada[0]][ultimaCeldaModificada[1]].lastChild;
+      let txt = nodoHijo.textContent.replace(/&nbsp;/g, ' ');
       
       //Necesitamos seleccionar la ultima parte del texto para simular el desplazamiento del cursor
       let range = document.createRange();
