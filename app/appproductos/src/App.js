@@ -25,7 +25,7 @@ class Tabla extends React.Component {
   }
  
   fetchData(state, instance){
-    this.setState({loading: true});
+    this.setState({loading: true, prodNuevo: false});
     $.ajax({
       url: 'http://localhost/tp10/api/controller/productoController.php?action=obtenerTodos',
       dataType: "json"
@@ -138,7 +138,12 @@ class Tabla extends React.Component {
   renderEditable(cellInfo) {
     return (
       <div
-        ref={(ref) => this.celdas[cellInfo.index][cellInfo.column.id] = ref}
+        ref={(ref) => {
+            if (this.celdas[cellInfo.index] !== undefined) { //Evitar referencias a objetos borrados
+              this.celdas[cellInfo.index][cellInfo.column.id] = ref;
+            }
+          }
+        }
         style={{ backgroundColor: "#fafafa" }}
         contentEditable
         suppressContentEditableWarning
@@ -186,6 +191,7 @@ class Tabla extends React.Component {
     
     data.splice(index, 1);
     this.setState({data: data});
+    this.celdas.splice(index);
   }
 
   //Magia de bajo nivel para que el cursor se ponga donde se tiene que poner cuando se editan los contenteditables

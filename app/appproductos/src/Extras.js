@@ -17,15 +17,16 @@ export const Botoncitos= ({nuevo, agregarProducto, eliminarClick}) => {
                         <i className="material-icons" data-toggle="tooltip" title="OK">done</i>
                     </a> : null
                 }
-                <i onClick={eliminarClick} className="material-icons" data-toggle="tooltip" title="Eliminar">&#xE872;</i>
+                <a onMouseDown={eliminarClick}>
+                    <i className="material-icons" data-toggle="tooltip" title="Eliminar">&#xE872;</i>
+                </a>
             </div>
     );
 }
 
 export const setEndOfContenteditable = (contentEditableElement) => {
     let range, selection;
-    if(document.createRange)
-    {
+    if (document.createRange) {
         range = document.createRange();//Create a range (a range is a like the selection but invisible)
         range.selectNodeContents(contentEditableElement);//Select the entire contents of the element with the range
         range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
