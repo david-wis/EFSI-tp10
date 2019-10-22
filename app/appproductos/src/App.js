@@ -4,14 +4,13 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import $ from "jquery";
 import Producto from "./Producto.js";
-import {ImgUploader, Botoncitos, setEndOfContenteditable} from './Extras.js';
+import {ImgUploader, Botoncitos, setEndOfContenteditable, validarFila} from './Helpers.js';
 
 class Tabla extends React.Component {
   constructor() {
     super();
     this.state = {
       data: [],
-      pages: null,
       loading: true,
       prodNuevo: false,
       ultimaCeldaModificada: null
@@ -33,11 +32,7 @@ class Tabla extends React.Component {
       data.forEach(producto => {
         this.celdas.push([]);
       });
-      this.setState({
-        data: data,
-        pages: data.length,
-        loading: false
-      });
+      this.setState({data: data, loading: false});
     });
   }
 
@@ -74,7 +69,6 @@ class Tabla extends React.Component {
   }
 
   modificarTabla(producto, index) {
-    console.log(producto);
     $.ajax({
       url: 'http://localhost/tp10/api/controller/productoController.php?action=modificar',
       method: 'POST',
@@ -98,17 +92,9 @@ class Tabla extends React.Component {
     });
   }
 
-  validarFila(index) { //Se fija que todos los campos esten llenos
-    let exito = true;
-    for (let prop in this.state.data[index]) {
-      exito = exito && (this.state.data[index][prop] !== "");
-    }
-    return exito;
-  }
-
   agregarProducto(index) {
-    if (this.validarFila(index)) {
-      let data = [...this.state.data];
+    let data = [...this.state.data];
+    if (validarFila(index, data)) {
       let producto = data[index];
       $.ajax({
         url: 'http://localhost/tp10/api/controller/productoController.php?action=agregar',
@@ -211,7 +197,7 @@ class Tabla extends React.Component {
   }
 
   render() {
-    const { data, pages, loading} = this.state;
+    const { data, loading} = this.state;
     return (
       <div>
         <ReactTable
@@ -255,17 +241,17 @@ class Tabla extends React.Component {
             }
           ]}
           data={data}
-          pages={pages} // Display the total number of pages
           loading={loading} // Display the loading overlay when we need it
           onFetchData={this.fetchData} // Request new data when things change
           defaultPageSize={5}
+          //pages={pages} // Display the total number of pages
           className="-striped -highlight"
           getTdProps={(state, rowInfo, column, instance) => {
             return {
               onClick: (e, handleOriginal) => {
                 if (rowInfo === undefined) {
                   if (!this.state.prodNuevo){
-                    this.celdas.push([]); //Reconozco que esto es poner una curita en una fractura expuesta pero al menos funciona
+                    this.celdas.push([]);
                     let prod = new Producto();
                     Producto.ObtenerFotoDefault().then(base64img => {
                       prod.Imagen = base64img;
