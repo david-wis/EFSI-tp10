@@ -16,6 +16,7 @@ class Tabla extends React.Component {
       ultimaCeldaModificada: null
     };
     this.celdas = []; //refs a todas las celdas
+    //this.modal = React.useRef();
     this.fetchData = this.fetchData.bind(this);
     this.renderEditable = this.renderEditable.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
@@ -84,6 +85,7 @@ class Tabla extends React.Component {
         this.setState({data: data});
       } else {
         console.log(result);
+        this.modal.current.handleShow();
         this.setState({data: this.state.data});
       }
     }).fail((jqXHR, textStatus, errorThrown) => {
@@ -198,6 +200,7 @@ class Tabla extends React.Component {
 
   render() {
     const { data, loading} = this.state;
+    //<ModalMsg ref={this.modal}/>
     return (
       <div>
         <ReactTable

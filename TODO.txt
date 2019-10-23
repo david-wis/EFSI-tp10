@@ -1,4 +1,0 @@
-Bugs:
-- Input hace perder el focus ✓
-- Borrar al modificar ✓
-- Modificar el precio corre la imagen en producto nuevo ✓?
