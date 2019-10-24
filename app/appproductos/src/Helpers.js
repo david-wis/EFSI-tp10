@@ -38,13 +38,8 @@ export const setEndOfContenteditable = (contentEditableElement) => {
 
 export const validarFila = (index, data) => { //Se fija que todos los campos esten llenos
     let exito = true;
-    /*const {
-        ["Imagen"]: removed,
-        ["Nuevo"]: removed,
-        ["Nuevonombre"]: removed,
-        ...prodNuevo
-     } = {...data[index]};*/
-    for (let prop in data[index]) {
+    const {Imagen, Nuevo, Nuevonombre, ...prodNuevo} = data[index]; //Spread para remover attr
+    for (let prop in prodNuevo) {
         exito = exito && (data[index][prop] !== "");
         console.log(prop + ": " + exito);     
     }

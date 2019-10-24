@@ -62,7 +62,9 @@ class Tabla extends React.Component {
         this.modificarTabla(producto, index);
       } else {
         data[index] = producto;
-        this.setState({data: data});
+        this.setState({showModal: false}, () => {
+          this.setState({data: data});
+        });
       }
     }
     if (archivo) {
@@ -83,7 +85,9 @@ class Tabla extends React.Component {
         let data = [...this.state.data];
         producto.Nombre = producto.Nuevonombre;
         data[index] = producto;
-        this.setState({data: data});
+        this.setState({showModal: false}, () => {
+          this.setState({data: data}); 
+        });
       } else {
         console.log(result);
         this.setState({data: this.state.data, showModal: true, msg: result.msg});
@@ -109,7 +113,9 @@ class Tabla extends React.Component {
           console.log("Exito al actualizar los datos ");
           producto.Nuevo = false;
           data[index] = producto;
-          this.setState({data: data, prodNuevo: false});
+          this.setState({showModal: false}, () => {
+            this.setState({data: data, prodNuevo: false});
+          });
           console.log(result);
         } else {
           console.log(result);
@@ -150,7 +156,9 @@ class Tabla extends React.Component {
             producto[cellInfo.column.id] = e.target.innerHTML;
             data[cellInfo.index] = producto;
             let ultimaCeldaModificada = [cellInfo.index, cellInfo.column.id];
-            this.setState({data: data, ultimaCeldaModificada: ultimaCeldaModificada});
+            this.setState({showModal: false}, () => {
+              this.setState({data: data, ultimaCeldaModificada: ultimaCeldaModificada});
+            });
           }
         }}
 
