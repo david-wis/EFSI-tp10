@@ -12,27 +12,29 @@ export default class ModalMsg extends React.Component {
   };
 
   componentWillReceiveProps(newProps) {
-    this.state = {
+    this.setState({
       show: newProps.showModal,
       msg: newProps.msg
-    };
+    });
+  }
+
+  ocultarModal = () => {
+    this.setState({show: false});
   }
 
   render() {
     return (
-      <>
-        <Modal show={this.state.show} animation={false}>
-          <Modal.Header>
-            <Modal.Title>Error</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>{this.state.msg}</Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => {this.setState({show: false});}}>
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      </>
+      <Modal show={this.state.show} animation={true} onHide={this.ocultarModal}>
+        <Modal.Header>
+          <Modal.Title>Error</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{this.state.msg}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={this.ocultarModal}>
+            Cerrar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     );
   }
 }

@@ -9,7 +9,8 @@
     $action = isset($_POST['action']) ? $_POST['action'] : $_GET['action'];
     switch ($action) {
         case 'agregar':
-            /*  ProductoController no tiene relacion con 
+            /*  
+             *  ProductoController no tiene relacion con 
              *  la clase producto, por lo tanto usamos un array asociativo
              */
             $producto = array(); 

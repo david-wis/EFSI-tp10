@@ -35,7 +35,9 @@ class Tabla extends React.Component {
       data.forEach(producto => {
         this.celdas.push([]);
       });
-      this.setState({data: data, loading: false});
+      this.setState({showModal: false}, () => {
+        this.setState({data: data, loading: false});
+      });
     });
   }
 
@@ -193,7 +195,7 @@ class Tabla extends React.Component {
     this.celdas.splice(index);
   }
 
-  //Magia de bajo nivel para que el cursor se ponga donde se tiene que poner cuando se editan los contenteditables
+  //Magia de bajo nivel para que el cursor se ponga al final cuando se editan los contenteditables
   componentDidUpdate() {
     let {ultimaCeldaModificada} = this.state;
     if (ultimaCeldaModificada != null) {
@@ -210,7 +212,7 @@ class Tabla extends React.Component {
   }
 
   render() {
-    const { data, loading} = this.state;
+    const {data, loading} = this.state;
     return (
       <div>
       <ModalMsg showModal={this.state.showModal} msg={this.state.msg} />
