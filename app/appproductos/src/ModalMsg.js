@@ -25,7 +25,7 @@ export default class ModalMsg extends React.Component {
   render() {
     return (
       <Modal show={this.state.show} animation={true} onHide={this.ocultarModal}>
-        <Modal.Header>
+        <Modal.Header closeButton>
           <Modal.Title>Error</Modal.Title>
         </Modal.Header>
         <Modal.Body>{this.state.msg}</Modal.Body>

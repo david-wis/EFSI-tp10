@@ -27,15 +27,15 @@ class Tabla extends React.Component {
   }
  
   fetchData(state, instance){
-    this.setState({loading: true, prodNuevo: false});
-    $.ajax({
-      url: 'http://localhost/tp10/api/controller/productoController.php?action=obtenerTodos',
-      dataType: "json"
-    }).done((data) =>{
-      data.forEach(producto => {
-        this.celdas.push([]);
-      });
-      this.setState({showModal: false}, () => {
+    this.setState({showModal: false}, () => {
+      this.setState({loading: true, prodNuevo: false});
+      $.ajax({
+        url: 'http://localhost/tp10/api/controller/productoController.php?action=obtenerTodos',
+        dataType: "json"
+      }).done((data) =>{
+        data.forEach(producto => {
+          this.celdas.push([]);
+        });
         this.setState({data: data, loading: false});
       });
     });
