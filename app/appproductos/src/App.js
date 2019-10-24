@@ -187,7 +187,9 @@ class Tabla extends React.Component {
     }
     
     data.splice(index, 1);
-    this.setState({data: data});
+    this.setState({showModal: false}, () => {
+      this.setState({data: data});
+    });
     this.celdas.splice(index);
   }
 
