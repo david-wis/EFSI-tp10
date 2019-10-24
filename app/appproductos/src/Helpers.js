@@ -38,8 +38,15 @@ export const setEndOfContenteditable = (contentEditableElement) => {
 
 export const validarFila = (index, data) => { //Se fija que todos los campos esten llenos
     let exito = true;
+    /*const {
+        ["Imagen"]: removed,
+        ["Nuevo"]: removed,
+        ["Nuevonombre"]: removed,
+        ...prodNuevo
+     } = {...data[index]};*/
     for (let prop in data[index]) {
-      exito = exito && (data[index][prop] !== "");
+        exito = exito && (data[index][prop] !== "");
+        console.log(prop + ": " + exito);     
     }
     return exito;
 }

@@ -4,6 +4,7 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import $ from "jquery";
 import Producto from "./Producto.js";
+import ModalMsg from "./ModalMsg.js";
 import {ImgUploader, Botoncitos, setEndOfContenteditable, validarFila} from './Helpers.js';
 
 class Tabla extends React.Component {
@@ -13,10 +14,11 @@ class Tabla extends React.Component {
       data: [],
       loading: true,
       prodNuevo: false,
-      ultimaCeldaModificada: null
+      ultimaCeldaModificada: null,
+      showModal: false,
+      msg: ""
     };
     this.celdas = []; //refs a todas las celdas
-    //this.modal = React.useRef();
     this.fetchData = this.fetchData.bind(this);
     this.renderEditable = this.renderEditable.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
@@ -62,7 +64,6 @@ class Tabla extends React.Component {
         data[index] = producto;
         this.setState({data: data});
       }
-      
     }
     if (archivo) {
       reader.readAsDataURL(archivo);
@@ -85,12 +86,12 @@ class Tabla extends React.Component {
         this.setState({data: data});
       } else {
         console.log(result);
-        this.modal.current.handleShow();
+        this.setState({data: this.state.data, showModal: true, msg: result.msg});
         this.setState({data: this.state.data});
       }
     }).fail((jqXHR, textStatus, errorThrown) => {
       console.log("Error al actualizar los datos: " + jqXHR.responseText);
-      this.setState({data: this.state.data});
+      this.setState({data: this.state.data, showModal: true, msg: jqXHR.responseText});
     });
   }
 
@@ -112,14 +113,14 @@ class Tabla extends React.Component {
           console.log(result);
         } else {
           console.log(result);
-          this.setState({data: this.state.data});
+          this.setState({data: this.state.data, showModal: true, msg: result.msg});
         }
       }).fail((jqXHR, textStatus, errorThrown) => {
         console.log("Error al actualizar los datos: " + jqXHR.responseText);
-        this.setState({data: this.state.data});
+        this.setState({data: this.state.data, showModal: true, msg: jqXHR.responseText});
       });
     } else {
-      alert("No ok");
+      this.setState({showModal: true, msg: "Falto algun dato"});
     }
   }
 
@@ -200,10 +201,10 @@ class Tabla extends React.Component {
 
   render() {
     const { data, loading} = this.state;
-    //<ModalMsg ref={this.modal}/>
     return (
       <div>
-        <ReactTable
+      <ModalMsg showModal={this.state.showModal} msg={this.state.msg} />
+      <ReactTable
           columns={[
             {
               Header: "Nombre",
@@ -254,12 +255,14 @@ class Tabla extends React.Component {
               onClick: (e, handleOriginal) => {
                 if (rowInfo === undefined) {
                   if (!this.state.prodNuevo){
-                    this.celdas.push([]);
-                    let prod = new Producto();
-                    Producto.ObtenerFotoDefault().then(base64img => {
-                      prod.Imagen = base64img;
-                      const data = [...this.state.data, prod];
-                      this.setState({data: data, prodNuevo: true});
+                    this.setState({showModal: false}, () => {
+                      this.celdas.push([]);
+                      let prod = new Producto();
+                      Producto.ObtenerFotoDefault().then(base64img => {
+                        prod.Imagen = base64img;
+                        const data = [...this.state.data, prod];
+                        this.setState({data: data, prodNuevo: true, showModal: false});
+                      });
                     });
                   }
                 }
